@@ -1,0 +1,80 @@
+def convert24(raw):
+    raw_t = raw.split()
+    r_time = raw_t[0].split(':')
+    if "AM" in raw and r_time[0] == "12":
+        return "00" + r_time[1]
+    elif "AM" in raw:
+        return r_time[0] + r_time[1]
+    elif "PM" in raw and r_time[0] == "12":
+        return r_time[0] + r_time[1]
+    else:
+        return str(int(r_time[0]) + 12) + r_time[1]
+
+
+def convert12(raw24):
+    hr = int(raw24[0:2])
+    if hr == 0:
+        time12 = "12:" + raw24[2:] + " AM"
+    elif hr < 12:
+        time12 = raw24 + " AM"
+    elif hr == 12:
+        time12 = raw24 + " PM"
+    else:
+        hr -= 12
+        time12 = str(hr) + raw24[2:] + " PM"
+    return time12
+
+
+def minute(minutes, out_h=0):
+    if minutes < 59:
+        return [minutes, out_h]
+    elif minutes >= 60:
+        out_h = minutes // 60
+        minutes = minutes % 60
+    return [minutes, out_h]
+
+
+def hours(hrs):
+    if hrs >= 24:
+        days = hrs // 24
+        hr = hrs % 24
+        return [hr, days]
+    else:
+        days = 0
+        return [hrs, days]
+
+
+def week_day(day_of_week=None):
+    days_of_week = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+    if day_of_week.lower() in days_of_week:
+        return day_of_week.capitalize()
+
+def add_time(time, duration, day_of_week=None):
+    hour = int(time[0:2])
+    t_min = int(time[2:4])
+    dur_l = duration.split(':')
+    dur_h = int(dur_l[0])
+    dur_m = int(dur_l[1])
+    out_m = t_min + dur_m
+    f_min, out_h = minute(out_m)
+    hrs = hour + out_h + dur_h
+    f_hr, day = hours(hrs)
+    final_time = str(f_hr).zfill(2) + ":" + str(f_min).zfill(2)
+    f_time = convert12(final_time)
+
+    if day == 0:
+        # print(f_time)
+        return f_time
+    elif day == 1:
+        # print(f_time, "(next day)")
+        return f_time, "(next day)"
+    elif day > 1:
+        # print(f"{f_time} ({day} days later)")
+        return f"{f_time} ({day} days later)"
+
+
+time = convert24(input("Please enter the start time in 12-hour format: "))
+duration = input("Please enter the duration of the event in hh:mm format: ")
+
+add_time(time, duration)
+print(add_time(time, duration))
